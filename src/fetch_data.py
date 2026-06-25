@@ -1,3 +1,9 @@
+"""
+File: fetch_data.py
+
+Purpose: User is prompted to input tickers in order
+to place them into their portfolio. 
+"""
 import yfinance as yf
 import matplotlib.pyplot as plt
 

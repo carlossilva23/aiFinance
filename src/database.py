@@ -6,24 +6,83 @@ list with tickers inputted by user.
 
 """
 import sqlite3
+import pandas as pd
 
-connection = sqlite3.connect("stocks.db")
-cursor = connection.cursor()
 
-cursor.execute("""
-    CREATE TABLE IF NOT EXISTS portfolio (
-        ticker TEXT NOT NULL,
-        date TEXT NOT NULL,
-        open INT NOT NULL,
-        high INT NOT NULL,
-        low INT NOT NULL,
-        close INT NOT NULL,
-        volume INT NOT NULL
+def create_database():
+    """Create and return a connection to stocks.db."""
+    connection = sqlite3.connect("stocks.db")
+    return connection
+
+
+def create_stock_table(connection):
+    """Create the portfolio table if it does not already exist."""
+    cursor = connection.cursor()
+    cursor.execute("""
+        CREATE TABLE IF NOT EXISTS portfolio (
+            ticker TEXT NOT NULL,
+            date TEXT NOT NULL,
+            open REAL NOT NULL,
+            high REAL NOT NULL,
+            low REAL NOT NULL,
+            close REAL NOT NULL,
+            volume INT NOT NULL,
+            UNIQUE(ticker, date)
+            )
+        """)
+    connection.commit()
+
+
+def insert_stock_data(connection, ticker, df):
+    """Insert OHLCV rows for a ticker into the portfolio table.
+
+    Accepts a connection, a ticker string, and a pandas DataFrame
+    with Date as the index and columns Open, High, Low, Close, Volume.
+    Uses INSERT OR IGNORE to skip duplicate (ticker, date) pairs.
+    """
+    cursor = connection.cursor()
+    for date, row in df.iterrows():
+        cursor.execute(
+            """
+            INSERT OR IGNORE INTO portfolio
+                (ticker, date, open, high, low, close, volume)
+            VALUES (?, ?, ?, ?, ?, ?, ?)
+            """,
+            (
+                ticker,
+                str(date)[:10],
+                float(row["Open"]),
+                float(row["High"]),
+                float(row["Low"]),
+                float(row["Close"]),
+                int(row["Volume"]),
+            ),
         )
-    """)
+    connection.commit()
 
-# 4. Save (commit) your changes
-connection.commit()
 
-# 5. Always close the connection when finished
-connection.close()
+def get_stock_data(connection, ticker):
+    """Retrieve all rows for a ticker ordered by date.
+
+    Returns a pandas DataFrame with columns:
+    date, open, high, low, close, volume.
+    """
+    query = """
+        SELECT date, open, high, low, close, volume
+        FROM portfolio
+        WHERE ticker = ?
+        ORDER BY date ASC
+    """
+    return pd.read_sql_query(query, connection, params=(ticker,))
+
+
+def ticker_exists(connection, ticker):
+    """Return True if any rows exist for ticker in the database."""
+    cursor = connection.cursor()
+    cursor.execute(
+        "SELECT 1 FROM portfolio WHERE ticker = ? LIMIT 1",
+        (ticker,),
+    )
+    return cursor.fetchone() is not None
+
+

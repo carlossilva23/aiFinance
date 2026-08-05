@@ -11,6 +11,7 @@ from rich.console import Console
 from rich.panel import Panel
 from rich.table import Table
 from rich.text import Text
+from rich.markdown import Markdown
 
 console = Console()
 
@@ -96,4 +97,22 @@ def generate_report(ticker, results):
         title=f"[bold]{ticker} — Analysis Report[/bold]",
         border_style="blue",
         padding=(1, 2),
+    ))
+
+
+def print_ai_summary(summary_text, tickers):
+    """Print the AI-generated summary inside a rich Panel matching the report style.
+
+    Parameters
+    ----------
+    summary_text : str  — plain-English text returned by get_summary()
+    tickers      : list — list of ticker symbols included in the summary
+    """
+    title = "[bold]AI Summary — " + ", ".join(tickers) + "[/bold]"
+    console.print()
+    console.print(Panel(
+        Markdown(summary_text),
+        title=title,
+        border_style="purple",
+        padding=(1, 3),
     ))

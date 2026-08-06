@@ -68,7 +68,7 @@ venv/bin/python -m pytest tests/unit/ tests/integration/ -q
 | `test_pipeline.py` | 13 | Store → retrieve → analyze integration, duplicate protection, RSI range, MACD columns |
 | `test_smoke.py` | 14 | Live yfinance fetch, MultiIndex flatten, row count, full pipeline, report generation |
 
-**Total: 144 unit + integration tests** (133 unit/integration, 14 e2e)
+**Total: 133 unit + integration tests** (plus 14 e2e smoke tests run separately)
 
 ## Notes
 

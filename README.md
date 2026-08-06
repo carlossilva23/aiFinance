@@ -42,7 +42,7 @@ aiFinance/
 ```bash
 git clone <repo-url>
 cd aiFinance
-python -m venv venv
+python3 -m venv venv
 source venv/bin/activate      # Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
@@ -66,7 +66,7 @@ The model used is configured in [`src/ai_summary.py`](src/ai_summary.py) via the
 Or directly:
 
 ```bash
-python src/main.py
+venv/bin/python src/main.py
 ```
 
 ---
@@ -217,9 +217,23 @@ Test rule-based trading strategies against historical data.
 
 - Fetches 1 year of OHLCV data on first run; refreshes with 5 or 10 years depending on context
 - Persists data locally in SQLite — no data lost between sessions; duplicates automatically skipped
-- All indicators hand-built with pandas — no external TA libraries
+- All indicators hand-built with pandas — no external TA libraries (demonstrates understanding)
 - Three strategy backtests with drawdown, volatility, and trade-log tracking
 - Position-based portfolio simulation with per-lot cost basis and blended returns
 - Local AI explanations via Ollama — LLM only receives pre-calculated numbers, minimising hallucination
 - 133 unit and integration tests covering all core logic
+
+---
+
+## Testing
+
+```bash
+# Unit and integration tests (fast, no network)
+venv/bin/python -m pytest tests/unit/ tests/integration/ -q
+
+# End-to-end smoke tests (slower, requires internet)
+venv/bin/python -m pytest tests/e2e/ -v
+```
+
+See [`tests/README.md`](tests/README.md) for the full test inventory.
 

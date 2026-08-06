@@ -2,11 +2,14 @@
 File: simulator.py
 
 Purpose: Simulates hypothetical buy-and-hold investments using closing prices
-from the database. Supports single-stock simulation (run_simulation) and
-multi-stock portfolio simulation (run_portfolio_simulation). Delegates AI
-explanation to the local Ollama model via ai_summary.get_summary().
+from the database. Supports single-stock simulation (run_simulation),
+weighted portfolio simulation (run_portfolio_simulation), and per-lot
+position-based simulation (run_position_based_portfolio). Delegates AI
+explanations to the local Ollama model via ai_summary.get_summary().
 """
-from database import get_stock_data_range
+from collections import defaultdict
+
+from database import get_stock_data, get_stock_data_range
 from ai_summary import get_summary
 
 
@@ -246,8 +249,6 @@ def run_position_based_portfolio(connection, positions_input):
     total_invested, total_final_value, total_profit_loss, total_percent_return,
     best_performer, worst_performer
     """
-    from database import get_stock_data
-
     lots = []
     for pos in positions_input:
         ticker     = pos["ticker"]
@@ -277,7 +278,6 @@ def run_position_based_portfolio(connection, positions_input):
         return None
 
     # ── Per-ticker summaries (merge lots of the same ticker) ────────────── #
-    from collections import defaultdict
     by_ticker = defaultdict(list)
     for lot in lots:
         by_ticker[lot["ticker"]].append(lot)

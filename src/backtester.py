@@ -4,9 +4,11 @@ File: backtester.py
 Purpose: Implements three trading strategy back-tests (Buy & Hold,
 MA Crossover, RSI Momentum) on historical OHLCV data retrieved from
 the database. Each strategy returns a standardised result dict.
+RSI values are computed via analysis.calc_rsi() — no inline duplication.
 """
 import pandas as pd
 
+from analysis import calc_rsi
 from database import get_stock_data_range
 from ai_summary import get_summary
 
@@ -193,7 +195,7 @@ def run_rsi_momentum(df, initial_cash, period=14, oversold=30, overbought=70):
     """RSI-based momentum strategy.
 
     Buy when RSI crosses below `oversold`; sell when RSI crosses above
-    `overbought`. RSI is re-implemented inline (no import from analysis.py).
+    `overbought`. RSI values are computed by analysis.calc_rsi().
 
     Parameters
     ----------
@@ -203,13 +205,7 @@ def run_rsi_momentum(df, initial_cash, period=14, oversold=30, overbought=70):
     oversold     : int/float — buy threshold (default 30)
     overbought   : int/float — sell threshold (default 70)
     """
-    delta    = df["close"].diff()
-    gain     = delta.clip(lower=0)
-    loss     = (-delta).clip(lower=0)
-    avg_gain = gain.rolling(period).mean()
-    avg_loss = loss.rolling(period).mean()
-    rs       = avg_gain / avg_loss
-    rsi      = 100 - (100 / (1 + rs))
+    rsi = calc_rsi(df, period=period)
 
     dates  = df["date"].tolist()
     closes = df["close"].tolist()

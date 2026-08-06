@@ -1,9 +1,9 @@
 """
 File: database.py
 
-Purpose: Creates a database based on portfolio
-list with tickers inputted by user. 
-
+Purpose: Manages the SQLite database for aiFinance. Provides functions to
+create the schema, insert OHLCV rows, query all rows for a ticker, query a
+date-bounded slice, and check whether a ticker is already stored.
 """
 import sqlite3
 import pandas as pd

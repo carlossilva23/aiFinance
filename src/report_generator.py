@@ -114,21 +114,18 @@ def print_simulation_report(sim_result, ai_explanation):
 
     profit = sim_result["profit_loss"] >= 0
     pl_colour = "green" if profit else "red"
-    pl_sign = "+" if profit else ""
-    ret_sign = "+" if sim_result["percent_return"] >= 0 else ""
+    pl_sign   = "+" if profit else ""
+    ret_sign  = "+" if sim_result["percent_return"] >= 0 else ""
 
-    table.add_row(
-        "Date Range",
-        f"{sim_result['start_date']} → {sim_result['end_date']}",
-    )
+    table.add_row("Date Range",        f"{sim_result['start_date']} → {sim_result['end_date']}")
     table.add_row("Investment Amount", f"${sim_result['investment_amount']:,.2f}")
     table.add_row("Buy Price (entry)", f"${sim_result['buy_price']:.2f}")
     table.add_row("Sell Price (exit)", f"${sim_result['sell_price']:.2f}")
-    table.add_row("Shares Purchased", f"{sim_result['shares_purchased']:.4f}")
-    table.add_row("Final Value", f"${sim_result['final_value']:,.2f}")
+    table.add_row("Shares Purchased",  f"{sim_result['shares_purchased']:.4f}")
+    table.add_row("Final Value",       f"${sim_result['final_value']:,.2f}")
     table.add_row(
         "Profit / Loss",
-        f"[{pl_colour}]{pl_sign}${sim_result['profit_loss']:,.2f}[/{pl_colour}]",
+        f"[{pl_colour}]{pl_sign}${abs(sim_result['profit_loss']):,.2f}[/{pl_colour}]",
     )
     table.add_row(
         "Return",

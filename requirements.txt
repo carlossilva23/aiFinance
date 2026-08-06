@@ -1,7 +1,7 @@
-yfinance
-pandas
-matplotlib
-rich
-numpy
-requests
-ollama
+yfinance==1.5.2
+pandas==3.0.5
+matplotlib==3.11.1
+rich==15.0.0
+numpy==2.5.1
+requests==2.34.2
+ollama==0.6.2

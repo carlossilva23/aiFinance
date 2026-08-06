@@ -37,14 +37,22 @@ def _fetch_and_store(connection, ticker_list):
             tickers_to_fetch.append(ticker)
 
     if tickers_to_fetch:
-        stock_data = fetch_stock_data(tickers_to_fetch)
+        try:
+            stock_data = fetch_stock_data(tickers_to_fetch)
+        except ValueError as exc:
+            print(f"Error fetching data: {exc}")
+            return
         for ticker, df in stock_data.items():
             insert_stock_data(connection, ticker, df)
             print(f"{ticker}: {len(df)} rows saved to database.")
 
     if tickers_to_refresh:
-        print("\nRefreshing data (fetching past year)...")
-        refreshed = refresh_stock_data(tickers_to_refresh)
+        print("\nRefreshing data (fetching 5 years of history)...")
+        try:
+            refreshed = refresh_stock_data(tickers_to_refresh)
+        except ValueError as exc:
+            print(f"Error refreshing data: {exc}")
+            return
         for ticker, df in refreshed.items():
             insert_stock_data(connection, ticker, df)
             stored = get_stock_data(connection, ticker)
@@ -67,14 +75,22 @@ def _fetch_and_store_backtest(connection, ticker_list):
             tickers_to_fetch.append(ticker)
 
     if tickers_to_fetch:
-        stock_data = fetch_stock_data(tickers_to_fetch, period="10y")
+        try:
+            stock_data = fetch_stock_data(tickers_to_fetch, period="10y")
+        except ValueError as exc:
+            print(f"Error fetching data: {exc}")
+            return
         for ticker, df in stock_data.items():
             insert_stock_data(connection, ticker, df)
             print(f"{ticker}: {len(df)} rows saved to database.")
 
     if tickers_to_refresh:
         print("\nRefreshing data (fetching 10 years of history)...")
-        refreshed = refresh_stock_data_backtest(tickers_to_refresh)
+        try:
+            refreshed = refresh_stock_data_backtest(tickers_to_refresh)
+        except ValueError as exc:
+            print(f"Error refreshing data: {exc}")
+            return
         for ticker, df in refreshed.items():
             insert_stock_data(connection, ticker, df)
             stored = get_stock_data(connection, ticker)
@@ -398,7 +414,7 @@ def main():
     print("  3. Portfolio simulator (weighted)")
     print("  4. Position-based portfolio (per-lot entry)")
     print("  5. Strategy backtester")
-    print("  6. Analysis + all simulators + backtester")
+    print("  6. Run all modes in sequence")
     choice = input("\nEnter choice [1/2/3/4/5/6]: ").strip()
 
     if choice == "1":
@@ -418,7 +434,7 @@ def main():
         _run_position_portfolio(connection)
         _run_backtester(connection)
     else:
-        print("Invalid choice. Exiting.")
+        print(f"'{choice}' is not a valid option. Please enter 1–6.")
 
     connection.close()
 

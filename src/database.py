@@ -76,6 +76,24 @@ def get_stock_data(connection, ticker):
     return pd.read_sql_query(query, connection, params=(ticker,))
 
 
+def get_stock_data_range(connection, ticker, start_date, end_date):
+    """Retrieve rows for a ticker within an inclusive date range.
+
+    Returns a pandas DataFrame with columns:
+    date, open, high, low, close, volume ordered by date ASC.
+    Returns an empty DataFrame if no rows match.
+    """
+    query = """
+        SELECT date, open, high, low, close, volume
+        FROM portfolio
+        WHERE ticker = ?
+          AND date >= ?
+          AND date <= ?
+        ORDER BY date ASC
+    """
+    return pd.read_sql_query(query, connection, params=(ticker, start_date, end_date))
+
+
 def ticker_exists(connection, ticker):
     """Return True if any rows exist for ticker in the database."""
     cursor = connection.cursor()
